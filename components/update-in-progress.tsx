@@ -1,17 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Updates from 'expo-updates';
 
 type UpdateInProgressProps = {
-  onThemeChange?: (isDarkMode: boolean) => void;
+  darkMode?: boolean;
 };
 
 type NewsItem = {
@@ -77,13 +69,12 @@ const darkPalette = {
   textSoft: '#95A7D4',
 };
 
-export function UpdateInProgress({ onThemeChange }: UpdateInProgressProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export function UpdateInProgress({ darkMode = false }: UpdateInProgressProps) {
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const [otaMessage, setOtaMessage] = useState('OTA pronto para fixes rápidos.');
   const [isFetchingNews, setIsFetchingNews] = useState(true);
 
-  const palette = isDarkMode ? darkPalette : lightPalette;
+  const palette = darkMode ? darkPalette : lightPalette;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -92,11 +83,6 @@ export function UpdateInProgress({ onThemeChange }: UpdateInProgressProps) {
 
     return () => clearTimeout(timer);
   }, []);
-
-  const handleThemeSwitch = (nextValue: boolean) => {
-    setIsDarkMode(nextValue);
-    onThemeChange?.(nextValue);
-  };
 
   const handleMockNewsSync = () => {
     if (isFetchingNews) {
@@ -143,20 +129,7 @@ export function UpdateInProgress({ onThemeChange }: UpdateInProgressProps) {
 
   return (
     <View style={[styles.container, { backgroundColor: palette.bg, borderColor: palette.border }]}>
-      <View style={styles.headerRow}>
-        <Text style={[styles.title, { color: palette.text }]}>Atualização em Andamento</Text>
-        <View style={styles.switchRow}>
-          <Text style={[styles.switchLabel, { color: palette.textMuted }]}>
-            {isDarkMode ? 'Escuro' : 'Claro'}
-          </Text>
-          <Switch
-            onValueChange={handleThemeSwitch}
-            thumbColor={isDarkMode ? '#DCE6FF' : '#FFFFFF'}
-            trackColor={{ false: '#B8C7F2', true: '#4A65C8' }}
-            value={isDarkMode}
-          />
-        </View>
-      </View>
+      <Text style={[styles.title, { color: palette.text }]}>Atualização em Andamento</Text>
 
       <View style={[styles.otaPanel, { backgroundColor: palette.panel, borderColor: palette.border }]}>
         <Text style={[styles.otaTitle, { color: palette.textMuted }]}>OTA para fixes rápidos</Text>
@@ -216,23 +189,9 @@ const styles = StyleSheet.create({
     gap: 14,
     padding: 16,
   },
-  headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   title: {
     fontSize: 24,
     fontWeight: '700',
-  },
-  switchRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  switchLabel: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   otaPanel: {
     borderRadius: 18,
